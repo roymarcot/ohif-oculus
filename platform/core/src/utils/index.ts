@@ -49,6 +49,11 @@ import { structuredCloneWithFunctions } from './structuredCloneWithFunctions';
 import { buildButtonCommands } from './buildButtonCommands';
 
 import { downloadBlob, downloadUrl, downloadCsv, downloadDicom } from './downloadBlob';
+import {
+  parseVOILUTSequence,
+  applyVOILUTToPixelData,
+  registerVOILUTSequenceImageLoader,
+} from './voiLutSequence';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -105,6 +110,9 @@ const utils = {
   downloadUrl,
   downloadCsv,
   downloadDicom,
+  parseVOILUTSequence,
+  applyVOILUTToPixelData,
+  registerVOILUTSequenceImageLoader,
 };
 
 export {
@@ -147,6 +155,9 @@ export {
   downloadUrl,
   downloadCsv,
   downloadDicom,
+  parseVOILUTSequence,
+  applyVOILUTToPixelData,
+  registerVOILUTSequenceImageLoader,
 };
 
 export default utils;

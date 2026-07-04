@@ -1,4 +1,4 @@
-import { Types } from '@ohif/core';
+import { Types, classes, utils as coreUtils } from '@ohif/core';
 
 import getDataSourcesModule from './getDataSourcesModule';
 import getLayoutTemplateModule from './getLayoutTemplateModule';
@@ -45,6 +45,14 @@ const defaultExtension: Types.Extensions.Extension = {
    */
   id,
   preRegistration,
+  onModeEnter() {
+    // Envuelve los loaders DICOM para aplicar VOILUTSequence (0028,3010) en carga.
+    // Debe ejecutarse después del preRegistration de extension-cornerstone (que
+    // registra los loaders originales vía dicomImageLoader.init()), por eso se
+    // activa aquí y no en preRegistration; onModeEnter corre antes de que los
+    // viewports del modo carguen imágenes. El registrador es idempotente.
+    coreUtils.registerVOILUTSequenceImageLoader(classes.MetadataProvider);
+  },
   onModeExit() {
     useViewportGridStore.getState().clearViewportGridState();
     useUIStateStore.getState().clearUIState();
