@@ -677,6 +677,17 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'IntensityProjection',
+    uiType: 'ohif.intensityProjection',
+    props: {
+      label: i18n.t('Buttons:Intensity Projection'),
+      minThickness: 0.1,
+      maxThickness: 20,
+      stepThickness: 0.1,
+      evaluate: 'evaluate.intensityProjection',
+    },
+  },
+  {
     id: 'SegmentLabelTool',
     uiType: 'ohif.toolBoxButton',
     props: {

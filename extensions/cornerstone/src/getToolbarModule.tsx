@@ -7,6 +7,7 @@ import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu
 import { VOIManualControlMenuWrapper } from './components/VOIManualControlMenu';
 import { ThresholdMenuWrapper } from './components/ThresholdMenu/ThresholdMenuWrapper';
 import { OpacityMenuWrapper } from './components/OpacityMenu/OpacityMenuWrapper';
+import { IntensityProjectionControls } from './components/IntensityProjectionControls';
 import ModalityLoadBadge from './components/ModalityLoadBadge/ModalityLoadBadge';
 import NavigationComponent from './components/NavigationComponent/NavigationComponent';
 import TrackingStatus from './components/TrackingStatus/TrackingStatus';
@@ -28,6 +29,7 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
     displaySetService,
     viewportGridService,
     segmentationService,
+    hangingProtocolService,
   } = servicesManager.services;
 
   return [
@@ -248,6 +250,22 @@ export default function getToolbarModule({ servicesManager, extensionManager }: 
     {
       name: 'ohif.thresholdMenu',
       defaultComponent: ThresholdMenuWrapper,
+    },
+    {
+      name: 'ohif.intensityProjection',
+      defaultComponent: IntensityProjectionControls,
+    },
+    {
+      name: 'evaluate.intensityProjection',
+      evaluate: () => {
+        let isMPR = false;
+        try {
+          isMPR = hangingProtocolService.getState()?.protocolId === 'mpr';
+        } catch {
+          // ignore if service is not ready
+        }
+        return isMPR ? { disabled: false } : { disabled: true, visible: false };
+      },
     },
     {
       name: 'ohif.opacityMenu',

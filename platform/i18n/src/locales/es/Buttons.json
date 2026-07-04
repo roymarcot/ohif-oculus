@@ -41,5 +41,7 @@
   "Stack Scroll": "Scroll",
   "Stop": "$t(Common:Stop)",
   "Themes": "Temas",
-  "Zoom": "Ampliar"
+  "Zoom": "Ampliar",
+  "Intensity Projection": "Proyección de intensidad",
+  "Slab Thickness": "Grosor de corte"
 }

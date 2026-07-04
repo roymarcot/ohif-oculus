@@ -158,5 +158,7 @@
   "Shapes": "Shapes",
   "Create new segmentation to enable shapes tool.": "Create new segmentation to enable shapes tool.",
   "US Pleura B-line Annotation": "US Pleura B-line Annotation",
-  "Arrow Annotate Tool": "Arrow Annotate Tool"
+  "Arrow Annotate Tool": "Arrow Annotate Tool",
+  "Intensity Projection": "Intensity Projection",
+  "Slab Thickness": "Slab Thickness"
 }
