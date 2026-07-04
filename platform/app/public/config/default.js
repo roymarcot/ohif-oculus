@@ -3,7 +3,15 @@
 window.config = {
   name: 'config/default.js',
   routerBasename: null,
-  // whiteLabeling: {},
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement('img', {
+        src: './oculus-logo.svg',
+        alt: 'Oculus',
+        style: { height: '26px', width: 'auto' },
+      });
+    },
+  },
   extensions: [],
   modes: [],
   customizationService: {},
