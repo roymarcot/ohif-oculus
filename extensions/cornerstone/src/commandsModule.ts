@@ -33,6 +33,7 @@ import {
   callInputDialog,
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
+import getCornerstoneBlendMode from './utils/getCornerstoneBlendMode';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import { getViewportEnabledElement } from './utils/getViewportEnabledElement';
@@ -2103,6 +2104,22 @@ function commandsModule({
       const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
       viewportInfo.setOrientation(orientation);
     },
+    setIntensityProjection: ({
+      blendMode,
+      slabThickness,
+    }: {
+      blendMode?: string;
+      slabThickness?: number;
+    }) => {
+      const { viewports } = viewportGridService.getState();
+      viewports.forEach((_gridViewport, viewportId) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        if (!viewport || !(viewport instanceof VolumeViewport)) return;
+        if (blendMode !== undefined) viewport.setBlendMode(getCornerstoneBlendMode(blendMode));
+        if (slabThickness !== undefined) viewport.setSlabThickness(slabThickness);
+        viewport.render();
+      });
+    },
     /**
      * Toggles the horizontal flip state of the viewport.
      */
@@ -2581,6 +2598,9 @@ function commandsModule({
     },
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
+    },
+    setIntensityProjection: {
+      commandFn: actions.setIntensityProjection,
     },
     setViewportForToolConfiguration: {
       commandFn: actions.setViewportForToolConfiguration,
