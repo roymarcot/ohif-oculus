@@ -2460,6 +2460,59 @@ export const ToolRotateRight = (props: IconProps) => (
   </svg>
 );
 
+export const ToolRotateFree = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-rotate-free"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <rect
+        id="Rectangle"
+        fill="currentColor"
+        transform="rotate(-20, 14, 14)"
+        x="10"
+        y="10"
+        width="8"
+        height="8"
+        rx="1"
+      ></rect>
+      <g
+        id="Group"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <path
+          d="M23.5,14 A9.5,9.5 0 1 0 19.5,21.75"
+          id="Path"
+        ></path>
+        <polyline
+          id="Path"
+          points="15.6 21.4 19.5 21.75 18.5 25.5"
+        ></polyline>
+      </g>
+    </g>
+  </svg>
+);
+
 export const ToolSegBrush = (props: IconProps) => (
   <svg
     width="24px"
