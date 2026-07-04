@@ -15,6 +15,9 @@ window.config = {
   extensions: [],
   modes: [],
   customizationService: {},
+  investigationalUseDialog: {
+    option: 'never',
+  },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
