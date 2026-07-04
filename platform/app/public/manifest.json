@@ -1,7 +1,7 @@
 {
-  "name": "OHIF Viewer",
-  "short_name": "Viewer",
-  "description": "OHIF Viewer",
+  "name": "Oculus Viewer",
+  "short_name": "Oculus Viewer",
+  "description": "Oculus Viewer",
   "dir": "auto",
   "lang": "en-US",
   "orientation": "any",
