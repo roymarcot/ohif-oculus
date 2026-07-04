@@ -34,6 +34,7 @@ import {
   UltrasoundPleuraBLineTool,
   PlanarFreehandROITool,
   PlanarFreehandContourSegmentationTool,
+  PlanarRotateTool,
   SplineROITool,
   LivewireContourTool,
   OrientationMarkerTool,
@@ -103,6 +104,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(UltrasoundDirectionalTool);
   addTool(UltrasoundPleuraBLineTool);
   addTool(PlanarFreehandROITool);
+  addTool(PlanarRotateTool);
   addTool(SplineROITool);
   addTool(LivewireContourTool);
   addTool(OrientationMarkerTool);
@@ -167,6 +169,7 @@ const toolNames = {
   SplineROI: SplineROITool.toolName,
   LivewireContour: LivewireContourTool.toolName,
   PlanarFreehandROI: PlanarFreehandROITool.toolName,
+  PlanarRotate: PlanarRotateTool.toolName,
   OrientationMarker: OrientationMarkerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
