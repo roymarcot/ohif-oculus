@@ -256,6 +256,7 @@ export const toolbarSections = {
   MoreTools: [
     'Reset',
     'rotate-right',
+    'PlanarRotate',
     'flipHorizontal',
     'ImageSliceSync',
     'ReferenceLines',

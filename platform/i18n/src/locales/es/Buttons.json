@@ -34,6 +34,8 @@
   "Reset": "$t(Common:Reset)",
   "Reset to defaults": "$t(Common:Reset) por defecto",
   "Rotate Right": "Girar ->",
+  "Free Rotation": "Rotación libre",
+  "Rotate image by dragging": "Rotar la imagen arrastrando el mouse",
   "Sagittal": "Sagital",
   "Save": "Guardar",
   "Stack Scroll": "Scroll",

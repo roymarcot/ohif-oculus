@@ -208,6 +208,23 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'PlanarRotate',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-rotate-free',
+      label: i18n.t('Buttons:Free Rotation'),
+      tooltip: i18n.t('Buttons:Rotate image by dragging'),
+      commands: setToolActiveToolbar,
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'volume3d'],
+        },
+      ],
+    },
+  },
+  {
     id: 'flipHorizontal',
     uiType: 'ohif.toolButton',
     props: {
