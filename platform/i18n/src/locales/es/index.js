@@ -1,6 +1,7 @@
 import AboutModal from './AboutModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
+import Colormaps from './Colormaps.json';
 import Common from './Common.json';
 import DatePicker from './DatePicker.json';
 import Header from './Header.json';
@@ -18,6 +19,7 @@ export default {
     AboutModal,
     Buttons,
     CineDialog,
+    Colormaps,
     Common,
     DatePicker,
     Header,
