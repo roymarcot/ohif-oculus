@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
+import { useTranslation } from 'react-i18next';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
@@ -18,6 +19,7 @@ const Thumbnail = ({
   seriesNumber,
   numInstances,
   loadingProgress,
+  hasLoadingError = false,
   countIcon,
   messages,
   isActive,
@@ -46,6 +48,58 @@ const Thumbnail = ({
   });
 
   const [lastTap, setLastTap] = useState(0);
+  const { t } = useTranslation('StudyBrowser');
+
+  const loadingPct = Math.min(100, Math.round((loadingProgress ?? 0) * 100));
+  const showLoadingProgress = loadingProgress > 0;
+  const isLoadComplete = loadingProgress >= 1;
+
+  const loadingBarColor = hasLoadingError
+    ? 'bg-red-500'
+    : isLoadComplete
+      ? 'bg-green-500'
+      : 'bg-highlight';
+
+  const renderLoadingStatus = () => {
+    if (hasLoadingError) {
+      return (
+        <Tooltip>
+          <TooltipTrigger>
+            <Icons.StatusWarning className="h-[12px] w-[12px] text-red-500" />
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            {t('Not all images in this series could be loaded')}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
+    if (isLoadComplete) {
+      return <Icons.StatusSuccess className="h-[12px] w-[12px] text-green-500" />;
+    }
+
+    return (
+      <span className="text-muted-foreground min-w-[24px] text-right text-[10px] leading-none">
+        {loadingPct}%
+      </span>
+    );
+  };
+
+  const renderLoadingProgressBar = () =>
+    showLoadingProgress && (
+      <div
+        className="flex h-[12px] items-center gap-[4px] pl-1 pr-1"
+        data-cy="series-loading-progress"
+      >
+        <div className="bg-primary/25 h-[3px] flex-1 overflow-hidden rounded">
+          <div
+            className={classnames('h-full rounded transition-all duration-300', loadingBarColor)}
+            style={{ width: `${loadingPct}%` }}
+          ></div>
+        </div>
+        {renderLoadingStatus()}
+      </div>
+    );
 
   const handleTouchEnd = e => {
     const currentTime = new Date().getTime();
@@ -152,6 +206,7 @@ const Thumbnail = ({
               </div>
             </TooltipTrigger>
           </Tooltip>
+          {renderLoadingProgressBar()}
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
             <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
             <div className="text-muted-foreground text-[11px]">
@@ -186,6 +241,17 @@ const Thumbnail = ({
               loadingProgress && loadingProgress < 1 && 'bg-primary/25'
             )}
           ></div>
+          {showLoadingProgress && (
+            <div className="bg-primary/25 absolute bottom-0 left-[12px] right-0 h-[2px] overflow-hidden rounded">
+              <div
+                className={classnames(
+                  'h-full rounded transition-all duration-300',
+                  loadingBarColor
+                )}
+                style={{ width: `${loadingPct}%` }}
+              ></div>
+            </div>
+          )}
           <div className="flex h-full w-[calc(100%-12px)] flex-col justify-start">
             <div className="flex items-center gap-[7px]">
               <div
@@ -220,6 +286,7 @@ const Thumbnail = ({
                   <div>{numInstances}</div>
                 </div>
               </div>
+              {showLoadingProgress && renderLoadingStatus()}
             </div>
           </div>
         </div>
@@ -316,6 +383,7 @@ Thumbnail.propTypes = {
   seriesNumber: PropTypes.any,
   numInstances: PropTypes.number.isRequired,
   loadingProgress: PropTypes.number,
+  hasLoadingError: PropTypes.bool,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
