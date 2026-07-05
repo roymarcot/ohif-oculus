@@ -11,6 +11,7 @@ import StudyBrowser from './StudyBrowser.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
+import WindowLevelActionMenu from './WindowLevelActionMenu.json';
 
 export default {
   es: {
@@ -27,5 +28,6 @@ export default {
     StudyList,
     UserPreferencesModal,
     ViewportDownloadForm,
+    WindowLevelActionMenu,
   },
 };
