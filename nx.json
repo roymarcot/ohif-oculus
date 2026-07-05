@@ -67,7 +67,12 @@
     },
     "build": {
       "outputs": [
-        "{projectRoot}/platform/app/dist"
+        "{projectRoot}/dist"
+      ]
+    },
+    "build:viewer": {
+      "outputs": [
+        "{projectRoot}/dist"
       ]
     }
   },
