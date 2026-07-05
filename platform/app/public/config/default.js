@@ -38,6 +38,14 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
+  // Descarga en segundo plano las series cercanas a la activa y habilita el
+  // progreso de carga por serie en el panel de miniaturas (StudyBrowser)
+  studyPrefetcher: {
+    enabled: true,
+    displaySetsCount: 3,
+    maxNumPrefetchRequests: 10,
+    order: 'closest',
+  },
   showErrorDetails: 'always', // 'always', 'dev', 'production'
   // filterQueryParam: false,
   // Defines multi-monitor layouts
