@@ -26,7 +26,8 @@ function PanelStudyBrowser({
   onDoubleClickThumbnailHandlerCallBack,
 }) {
   const { servicesManager, commandsManager, extensionManager } = useSystem();
-  const { displaySetService, customizationService } = servicesManager.services;
+  const { displaySetService, customizationService, studyPrefetcherService } =
+    servicesManager.services;
   const navigate = useNavigate();
   const studyMode =
     (customizationService.getCustomization('studyBrowser.studyMode') as string) || 'all';
@@ -295,6 +296,45 @@ function PanelStudyBrowser({
     };
   }, [displaySetService, dataSource, getImageSrc, hasLoadedViewports]);
 
+  // ~~ subscriptions --> loading progress per displaySet (StudyPrefetcherService)
+  useEffect(() => {
+    if (!studyPrefetcherService) {
+      return;
+    }
+
+    const progressSubscription = studyPrefetcherService.subscribe(
+      studyPrefetcherService.EVENTS.DISPLAYSET_LOAD_PROGRESS,
+      ({ displaySetInstanceUID, loadingProgress, numFailed = 0 }) => {
+        const pct = Math.round(loadingProgress * 100);
+
+        setDisplaySetsLoadingState(prevState => {
+          const prevEntry = prevState[displaySetInstanceUID];
+
+          // Only trigger a re-render when the integer percentage or the
+          // failure state changes (events fire once per image loaded)
+          if (prevEntry && prevEntry.pct === pct && prevEntry.numFailed === numFailed) {
+            return prevState;
+          }
+
+          return {
+            ...prevState,
+            [displaySetInstanceUID]: { progress: loadingProgress, pct, numFailed },
+          };
+        });
+      }
+    );
+
+    const stoppedSubscription = studyPrefetcherService.subscribe(
+      studyPrefetcherService.EVENTS.SERVICE_STOPPED,
+      () => setDisplaySetsLoadingState({})
+    );
+
+    return () => {
+      progressSubscription.unsubscribe();
+      stoppedSubscription.unsubscribe();
+    };
+  }, [studyPrefetcherService]);
+
   useEffect(() => {
     // TODO: Will this always hold _all_ the displaySets we care about?
     // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
@@ -486,7 +526,7 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
       const array =
         componentType === 'thumbnail' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
-      const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
+      const loadingState = displaySetLoadingState?.[displaySetInstanceUID];
 
       array.push({
         displaySetInstanceUID,
@@ -495,7 +535,8 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
         modality: ds.Modality,
         seriesDate: formatDate(ds.SeriesDate),
         numInstances: ds.numImageFrames ?? ds.instances?.length,
-        loadingProgress,
+        loadingProgress: loadingState?.progress,
+        hasLoadingError: loadingState?.numFailed > 0,
         countIcon: ds.countIcon,
         messages: ds.messages,
         StudyInstanceUID: ds.StudyInstanceUID,

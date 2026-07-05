@@ -87,7 +87,7 @@ export default function PanelStudyBrowserTracking({
         const array =
           componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
-        const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
+        const loadingState = displaySetLoadingState?.[displaySetInstanceUID];
 
         array.push({
           displaySetInstanceUID,
@@ -96,7 +96,8 @@ export default function PanelStudyBrowserTracking({
           modality: ds.Modality,
           seriesDate: ds.SeriesDate ? new Date(ds.SeriesDate).toLocaleDateString() : '',
           numInstances: ds.numImageFrames ?? ds.instances?.length,
-          loadingProgress,
+          loadingProgress: loadingState?.progress,
+          hasLoadingError: loadingState?.numFailed > 0,
           countIcon: ds.countIcon,
           messages: ds.messages,
           StudyInstanceUID: ds.StudyInstanceUID,
