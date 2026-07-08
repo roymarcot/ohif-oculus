@@ -58,6 +58,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
               <div>{formattedPatientID}</div>
               <div>{patientInfo.PatientSex}</div>
               <div>{patientInfo.PatientDOB}</div>
+              <div>{patientInfo.PatientAge}</div>
             </div>
           </>
         ) : (
