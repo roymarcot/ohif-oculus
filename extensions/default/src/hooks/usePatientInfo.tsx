@@ -1,7 +1,41 @@
 import { useState, useEffect } from 'react';
+import moment from 'moment';
 import { utils, useSystem } from '@ohif/core';
 
 const { formatPN, formatDate } = utils;
+
+const calculatePatientAge = (instance: Record<string, unknown>): string | null => {
+  if (instance.PatientAge) {
+    return instance.PatientAge as string;
+  }
+
+  if (!instance.PatientBirthDate) {
+    return null;
+  }
+
+  const birthDate = moment(instance.PatientBirthDate as string, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+  const referenceDate = instance.StudyDate
+    ? moment(instance.StudyDate as string, ['YYYYMMDD', 'YYYY.MM.DD'], true)
+    : moment();
+
+  if (!birthDate.isValid() || !referenceDate.isValid()) {
+    return null;
+  }
+
+  const ageInMonths = referenceDate.diff(birthDate, 'months');
+
+  if (ageInMonths < 1) {
+    const ageInDays = referenceDate.diff(birthDate, 'days');
+    return `${String(ageInDays).padStart(3, '0')}D`;
+  }
+
+  if (ageInMonths < 24) {
+    return `${String(ageInMonths).padStart(3, '0')}M`;
+  }
+
+  const ageInYears = referenceDate.diff(birthDate, 'years');
+  return `${String(ageInYears).padStart(3, '0')}Y`;
+};
 
 function usePatientInfo() {
   const { servicesManager } = useSystem();
@@ -12,6 +46,7 @@ function usePatientInfo() {
     PatientID: '',
     PatientSex: '',
     PatientDOB: '',
+    PatientAge: '',
   });
   const [isMixedPatients, setIsMixedPatients] = useState(false);
 
@@ -45,6 +80,7 @@ function usePatientInfo() {
       PatientName: instance.PatientName ? formatPN(instance.PatientName) : null,
       PatientSex: instance.PatientSex || null,
       PatientDOB: formatDate(instance.PatientBirthDate) || null,
+      PatientAge: calculatePatientAge(instance) || null,
     });
     checkMixedPatients(instance.PatientID || null);
   };
