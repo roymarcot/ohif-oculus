@@ -6,7 +6,7 @@ window.config = {
   whiteLabeling: {
     createLogoComponentFn: function (React) {
       return React.createElement('img', {
-        src: './oculus-logo.svg',
+        src: './assets/oculus-logo.svg',
         alt: 'Oculus',
         style: { height: '26px', width: 'auto' },
       });
