@@ -194,6 +194,22 @@ class MetadataProvider {
         const windowCenter = Array.isArray(WindowCenter) ? WindowCenter : [WindowCenter];
         const windowWidth = Array.isArray(WindowWidth) ? WindowWidth : [WindowWidth];
 
+        // cornerstone3D's LINEAR VOI formula (toLowHighRange) collapses lower/upper
+        // to the same value when windowWidth <= 1, producing a zero-width color
+        // transfer function that renders the whole image as a solid color (see
+        // DICOM PS3.3 C.11.2.1.2.1, the threshold special case cornerstone3D
+        // doesn't implement). Return a truthy module without windowCenter/windowWidth
+        // (a plain `return` would let metaData.get fall through to the
+        // dicom-image-loader's own provider, which re-reads the raw degenerate
+        // tags) so cornerstone falls back to auto-windowing from the decoded
+        // pixel value range.
+        if (windowWidth.some(ww => Number(ww) <= 1)) {
+          metadata = {
+            voiLUTFunction: VOILUTFunction,
+          };
+          break;
+        }
+
         metadata = {
           windowCenter: toNumber(windowCenter),
           windowWidth: toNumber(windowWidth),
