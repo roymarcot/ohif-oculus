@@ -1,4 +1,12 @@
 {
+  "cli": {
+    "packageManager": "yarn"
+  },
+  "pluginsConfig": {
+    "@nx/js": {
+      "analyzeLockfile": false
+    }
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx/tasks-runners/default",
