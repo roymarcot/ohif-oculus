@@ -9,6 +9,42 @@ import combineFrameInstance from '../utils/combineFrameInstance';
 
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
 
+/**
+ * Normalizes a multi-valued DICOM VOI attribute (WindowCenter / WindowWidth) into
+ * a flat array of numbers.
+ *
+ * Naturalized metadata coming from a dicom json data source is not always a flat
+ * array: multi-valued attributes may arrive nested (`[["50", "300"]]`) or as the
+ * raw backslash-delimited DICOM string (`"50\\300"`). Feeding those to
+ * `toNumber` yields `[NaN]`, which cornerstone turns into a NaN VOI range: the
+ * viewport paints vtk.js' NaN color (dark red) over the whole image and the
+ * overlay reads `W:NaN L:NaN`. Single-valued nesting (`[["1200"]]`) survives
+ * `Number()` by accident, which is why only multi-valued studies break.
+ */
+function normalizeVOIValues(value): number[] {
+  const flattened = [];
+
+  const visit = v => {
+    if (v == null) {
+      return;
+    }
+    if (Array.isArray(v)) {
+      v.forEach(visit);
+      return;
+    }
+    if (typeof v === 'string') {
+      // DICOM VM > 1 is backslash separated when kept as a single string.
+      v.split('\\').forEach(part => flattened.push(Number(part.trim())));
+      return;
+    }
+    flattened.push(Number(v));
+  };
+
+  visit(value);
+
+  return flattened;
+}
+
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
   // Can be used to store custom metadata for a specific type.
@@ -191,19 +227,26 @@ class MetadataProvider {
         if (WindowCenter == null || WindowWidth == null) {
           return;
         }
-        const windowCenter = Array.isArray(WindowCenter) ? WindowCenter : [WindowCenter];
-        const windowWidth = Array.isArray(WindowWidth) ? WindowWidth : [WindowWidth];
+        const windowCenter = normalizeVOIValues(WindowCenter);
+        const windowWidth = normalizeVOIValues(WindowWidth);
 
         // cornerstone3D's LINEAR VOI formula (toLowHighRange) collapses lower/upper
         // to the same value when windowWidth <= 1, producing a zero-width color
         // transfer function that renders the whole image as a solid color (see
         // DICOM PS3.3 C.11.2.1.2.1, the threshold special case cornerstone3D
-        // doesn't implement). Return a truthy module without windowCenter/windowWidth
-        // (a plain `return` would let metaData.get fall through to the
-        // dicom-image-loader's own provider, which re-reads the raw degenerate
-        // tags) so cornerstone falls back to auto-windowing from the decoded
-        // pixel value range.
-        if (windowWidth.some(ww => Number(ww) <= 1)) {
+        // doesn't implement); a non finite value ends up painting the vtk.js NaN
+        // color instead. Drop those presets, and when none is left return a truthy
+        // module without windowCenter/windowWidth (a plain `return` would let
+        // metaData.get fall through to the dicom-image-loader's own provider, which
+        // re-reads the raw degenerate tags) so cornerstone falls back to
+        // auto-windowing from the decoded pixel value range.
+        const voiPresets = windowWidth
+          .map((width, index) => ({ width, center: windowCenter[index] }))
+          .filter(
+            ({ width, center }) => Number.isFinite(width) && Number.isFinite(center) && width > 1
+          );
+
+        if (!voiPresets.length) {
           metadata = {
             voiLUTFunction: VOILUTFunction,
           };
@@ -211,8 +254,8 @@ class MetadataProvider {
         }
 
         metadata = {
-          windowCenter: toNumber(windowCenter),
-          windowWidth: toNumber(windowWidth),
+          windowCenter: voiPresets.map(({ center }) => center),
+          windowWidth: voiPresets.map(({ width }) => width),
           voiLUTFunction: VOILUTFunction,
         };
 
