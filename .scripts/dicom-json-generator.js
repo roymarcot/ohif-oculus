@@ -168,7 +168,15 @@ function createSeriesMetadata(instance) {
     instances: [],
   };
 }
+
+function hasDicomValue(value) {
+  return value != null && !(typeof value === 'string' && value.trim() === '');
+}
+
 function commonMetaData(instance) {
+  const hasRescaleParameters =
+    hasDicomValue(instance.RescaleIntercept) && hasDicomValue(instance.RescaleSlope);
+
   return {
     Columns: instance.Columns,
     Rows: instance.Rows,
@@ -192,8 +200,10 @@ function commonMetaData(instance) {
     StudyInstanceUID: instance.StudyInstanceUID,
     WindowCenter: instance.WindowCenter,
     WindowWidth: instance.WindowWidth,
-    RescaleIntercept: instance.RescaleIntercept,
-    RescaleSlope: instance.RescaleSlope,
+    ...(hasRescaleParameters && {
+      RescaleIntercept: instance.RescaleIntercept,
+      RescaleSlope: instance.RescaleSlope,
+    }),
   };
 }
 

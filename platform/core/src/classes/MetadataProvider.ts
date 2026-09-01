@@ -6,6 +6,7 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
+import normalizeModalityLUT from '../utils/normalizeModalityLUT';
 
 const { calibratedPixelSpacingMetadataProvider, getPixelSpacingInformation } = utilities;
 
@@ -262,16 +263,14 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.MODALITY_LUT_MODULE:
         const { RescaleIntercept, RescaleSlope } = instance;
-        // Early return if RescaleIntercept or RescaleSlope are not
-        // present (undefined) or explicitly set to null. We use loose
-        // equality in this case to check for *null* or *undefined*.
-        if (RescaleIntercept == null || RescaleSlope == null) {
+        const modalityLUT = normalizeModalityLUT(RescaleIntercept, RescaleSlope);
+
+        if (!modalityLUT) {
           return;
         }
 
         metadata = {
-          rescaleIntercept: toNumber(instance.RescaleIntercept),
-          rescaleSlope: toNumber(instance.RescaleSlope),
+          ...modalityLUT,
           rescaleType: instance.RescaleType,
         };
         break;
